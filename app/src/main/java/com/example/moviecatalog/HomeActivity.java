@@ -109,9 +109,9 @@ public class HomeActivity extends AppCompatActivity {
         recentMoviesRecyclerView.setAdapter(new RecentMoviesAdapter(filteredMovies, this));
     }
 
-        public class RecentMoviesAdapter extends RecyclerView.Adapter<RecentMoviesAdapter.MovieViewHolder> {
-            private List<Movie> recentMovies;
-            private Context context;
+        public static class RecentMoviesAdapter extends RecyclerView.Adapter<RecentMoviesAdapter.MovieViewHolder> {
+            private final List<Movie> recentMovies;
+            private final Context context;
 
             public RecentMoviesAdapter(List<Movie> recentMovies, Context context) {
                 this.recentMovies = recentMovies;
@@ -150,8 +150,7 @@ public class HomeActivity extends AppCompatActivity {
                 return recentMovies.size();
             }
 
-            // ✅ Remove 'static' from MovieViewHolder
-            public class MovieViewHolder extends RecyclerView.ViewHolder {
+            public static class MovieViewHolder extends RecyclerView.ViewHolder {
                 TextView movieTitle;
                 TextView movieCategory;
 

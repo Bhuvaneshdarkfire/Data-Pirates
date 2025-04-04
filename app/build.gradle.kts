@@ -27,8 +27,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
@@ -38,17 +38,25 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
 
-    // Add RecyclerView dependency
+    // RecyclerView
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
-    implementation(libs.firebase.firestore)
+    // Firebase BoM (Manages Firebase versioning)
+    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
+
+    // Firebase Core Services
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-storage")
+
+    // Firebase Analytics
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    // Testing Dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-auth")
-
-    // Google Sign-In
-    implementation("com.google.android.gms:play-services-auth:20.2.0")
 }
