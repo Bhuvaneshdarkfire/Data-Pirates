@@ -26,36 +26,41 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    // Required for Glide to work with annotationProcessor
+    buildFeatures {
+        buildConfig = true
     }
 }
 
 dependencies {
+    // AndroidX
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-
-    // RecyclerView
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
-    // Firebase BoM (Manages Firebase versioning)
+    // Firebase BoM - ensures all Firebase libs are compatible
     implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
-
-    // Firebase Core Services
-    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
 
-    // Firebase Analytics
-    implementation("com.google.firebase:firebase-analytics")
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
     // Google Sign-In
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.gms:play-services-auth:20.2.0")
 
-    // Testing Dependencies
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
