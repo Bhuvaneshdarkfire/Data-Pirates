@@ -7,4 +7,15 @@
     <string name="movie_catalog">🎬 Movie Catalog</string>
     <string name="select_image">Select Image</string>
     <string name="upload_image">Upload Image</string>
+    <string name="upload_movie_data">Upload Movie Data</string>
+    <string name="reviews">Reviews</string>
+    <string name="cast_and_crew">Cast and Crew</string>
+    <string name="ratings">Ratings</string>
+    <string name="title">Title</string>
+    <string name="director">Director</string>
+    <string name="category">Category</string>
+    <string name="release_date">Release Date</string>
+    <string name="movie_poster">Movie Poster</string>
+    <string name="movie_title">Movie Title</string>
+    <string name="rating_4_5">Rating: 4.5</string>
 </resources>

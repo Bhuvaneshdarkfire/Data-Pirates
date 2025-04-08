@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "117069283810",
+    "firebase_url": "https://moviecatalog-e6fcb-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "moviecatalog-e6fcb",
     "storage_bucket": "moviecatalog-e6fcb.firebasestorage.app"
   },
@@ -12,7 +13,12 @@
           "package_name": "com.example.moviecatalog"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "117069283810-5iodb8766b5m3lu9n0m59a1okouirgkt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAae3ZapMxKAN5EFgRMiUxvHxxyjkT6P7Y"
@@ -20,7 +26,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "117069283810-5iodb8766b5m3lu9n0m59a1okouirgkt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

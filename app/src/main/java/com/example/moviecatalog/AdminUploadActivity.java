@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -19,68 +18,87 @@ import java.util.Map;
 
 public class AdminUploadActivity extends AppCompatActivity {
 
-    private FirebaseFirestore db;
-    private FirebaseStorage storage;
+    private FirebaseFirestore firestore;
     private StorageReference storageRef;
+
+    private static final String TAG = "AdminUploadActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_upload); // Use a proper layout
+        setContentView(R.layout.activity_admin_upload);
 
-        // Initialize Firebase Firestore and Storage
-        db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
+        // Initialize Firebase
+        firestore = FirebaseFirestore.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
 
-        // Upload movie details
-        uploadMovieWithImage();
+        // Upload a single movie
+        uploadMovieIfNotExists(
+                "Inception",
+                "Christopher Nolan",
+                "Sci-Fi",
+                "2010",
+                "8.8",
+                "Leonardo DiCaprio, Joseph Gordon-Levitt, Ellen Page",
+                "A mind-bending thriller with stunning visuals.",
+                R.drawable.inception
+        );
     }
 
-    private void uploadMovieWithImage() {
-        String movieTitle = "Inception";
-        String director = "Christopher Nolan";
-        String category = "Sci-Fi";
-        String releaseDate = "2010";
-        String ratings = "8.8";
-        String castAndCrew = "Leonardo DiCaprio, Joseph Gordon-Levitt, Ellen Page";
-        String reviews = "A mind-bending thriller with stunning visuals.";
+    private void uploadMovieIfNotExists(String title, String director, String category,
+                                        String releaseDate, String ratings, String castAndCrew,
+                                        String reviews, int imageResId) {
 
-        db.collection("movies").document(movieTitle).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
+        firestore.collection("movies").document(title).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
                         Toast.makeText(this, "Movie already exists!", Toast.LENGTH_SHORT).show();
                     } else {
-                        uploadImageAndSaveMovie(movieTitle, director, category, releaseDate, ratings, castAndCrew, reviews);
+                        uploadPosterImage(title, imageResId, imageUrl ->
+                                uploadMovieToFirestore(title, director, category, releaseDate,
+                                        ratings, castAndCrew, reviews, imageUrl));
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error checking movie existence", e);
-                    Toast.makeText(this, "Error checking movie!", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error checking movie existence", e);
+                    Toast.makeText(this, "Failed to check movie!", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void uploadImageAndSaveMovie(String movieTitle, String director, String category,
-                                         String releaseDate, String ratings, String castAndCrew, String reviews) {
-        StorageReference imageRef = storageRef.child("movie_posters/" + movieTitle + ".jpg");
+    private void uploadPosterImage(String movieTitle, int imageResId, OnImageUploadComplete callback) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imageResId);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.inception);
+        if (bitmap == null) {
+            Toast.makeText(this, "Failed to decode image!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
 
+        StorageReference imageRef = storageRef.child("movie_posters/" + movieTitle + ".jpg");
+
         imageRef.putBytes(data)
-                .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri ->
-                        saveMovieDetails(movieTitle, director, category, releaseDate, ratings, castAndCrew, reviews, uri.toString())
-                ))
+                .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
+                        .addOnSuccessListener(uri -> {
+                            Log.d(TAG, "Image uploaded: " + uri.toString());
+                            callback.onComplete(uri.toString());
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e(TAG, "Failed to get download URL", e);
+                            Toast.makeText(this, "Image URL fetch failed!", Toast.LENGTH_SHORT).show();
+                        }))
                 .addOnFailureListener(e -> {
-                    Log.e("Firebase Storage", "Image upload failed", e);
+                    Log.e(TAG, "Image upload failed", e);
                     Toast.makeText(this, "Image upload failed!", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void saveMovieDetails(String title, String director, String category, String releaseDate,
-                                  String ratings, String castAndCrew, String reviews, String imageUrl) {
+    private void uploadMovieToFirestore(String title, String director, String category,
+                                        String releaseDate, String ratings, String castAndCrew,
+                                        String reviews, String imageUrl) {
+
         Map<String, Object> movie = new HashMap<>();
         movie.put("title", title);
         movie.put("director", director);
@@ -91,14 +109,18 @@ public class AdminUploadActivity extends AppCompatActivity {
         movie.put("reviews", reviews);
         movie.put("imageUrl", imageUrl);
 
-        db.collection("movies").document(title).set(movie)
+        firestore.collection("movies").document(title).set(movie)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("Firestore", "Movie uploaded successfully!");
-                    Toast.makeText(this, "Movie uploaded!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Movie uploaded successfully!");
+                    Toast.makeText(this, "Movie uploaded to Firestore!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Upload failed", e);
+                    Log.e(TAG, "Failed to upload movie", e);
                     Toast.makeText(this, "Upload failed!", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    interface OnImageUploadComplete {
+        void onComplete(String imageUrl);
     }
 }

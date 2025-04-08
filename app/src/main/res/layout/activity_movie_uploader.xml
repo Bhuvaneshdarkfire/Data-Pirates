@@ -1,35 +1,65 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="16dp"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:background="#FFFFFF">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:background="#ccc" />
-
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/progressIndicator"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:progress="0"
-        android:max="100"
-        style="@style/Widget.Material3.LinearProgressIndicator" />
+        android:orientation="vertical">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/selectImageBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/select_image" />
+        <EditText
+            android:id="@+id/titleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/title" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/uploadImageBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/upload_image"
-        android:enabled="false" />
-</LinearLayout>
+        <EditText
+            android:id="@+id/directorEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/director" />
+
+        <EditText
+            android:id="@+id/categoryEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/category" />
+
+        <EditText
+            android:id="@+id/releaseDateEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/release_date" />
+
+        <EditText
+            android:id="@+id/ratingsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/ratings" />
+
+        <EditText
+            android:id="@+id/castEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/cast_and_crew" />
+
+        <EditText
+            android:id="@+id/reviewsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/reviews" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/uploadDataBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/upload_movie_data"
+            android:backgroundTint="#6200EE"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+</ScrollView>

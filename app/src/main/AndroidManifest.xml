@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MovieCatalog"
-        tools:targetApi="31" >
+        tools:targetApi="31">
         <activity
             android:name=".activity_admin_upload"
             android:exported="false" />
@@ -25,33 +25,26 @@
             android:exported="false"
             tools:ignore="Instantiatable" />
         <activity
-            android:name=".MovieDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HomeActivity"
+            android:name=".MovieDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".SignupActivity"
-            android:exported="false" />
-        <activity android:name=".MovieUploader" />
+            android:exported="false" /> <!-- ✅ Set MovieUploader as Launcher -->
         <activity
             android:name=".LoginActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity> <!-- ❌ Removed LAUNCHER from LoginActivity -->
+        <activity
+            android:name=".HomeActivity"
+            android:exported="true" /> <!-- ❌ Removed LAUNCHER from MainActivity -->
         <activity
             android:name=".MainActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true" />
     </application>
 
 </manifest>
