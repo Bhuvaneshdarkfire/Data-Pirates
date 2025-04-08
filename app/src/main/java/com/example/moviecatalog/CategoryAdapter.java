@@ -10,16 +10,23 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
+
     private final Context context;
-    private final Map<String, List<Movie>> categoryMap;
+    private Map<String, List<Movie>> categoryMap = new HashMap<>();
+    private final List<String> categories = new ArrayList<>();
 
     public CategoryAdapter(Context context, Map<String, List<Movie>> categoryMap) {
         this.context = context;
-        this.categoryMap = categoryMap;
+        if (categoryMap != null) {
+            this.categoryMap.putAll(categoryMap);
+            this.categories.addAll(categoryMap.keySet());
+        }
     }
 
     @NonNull
@@ -31,18 +38,34 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
-        String category = (String) categoryMap.keySet().toArray()[position];
+        String category = categories.get(position);
         holder.categoryTitle.setText(category);
 
         List<Movie> movies = categoryMap.get(category);
-        HomeActivity.MovieAdapter adapter = new HomeActivity.MovieAdapter(context, movies);
-        holder.moviesRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        holder.moviesRecyclerView.setAdapter(adapter);
+        if (movies != null) {
+            MovieAdapter adapter = new MovieAdapter(context, movies);
+            holder.moviesRecyclerView.setLayoutManager(
+                    new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+            holder.moviesRecyclerView.setAdapter(adapter);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return categoryMap.size();
+        return categories.size();
+    }
+
+    /**
+     * Updates the adapter with a new category-to-movie mapping.
+     */
+    public void updateCategories(Map<String, List<Movie>> newCategoryMap) {
+        if (newCategoryMap != null) {
+            categoryMap.clear();
+            categoryMap.putAll(newCategoryMap);
+            categories.clear();
+            categories.addAll(newCategoryMap.keySet());
+            notifyDataSetChanged();
+        }
     }
 
     public static class CategoryViewHolder extends RecyclerView.ViewHolder {

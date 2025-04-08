@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -15,13 +16,25 @@
         android:theme="@style/Theme.MovieCatalog"
         tools:targetApi="31">
         <activity
+            android:name=".WishlistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".drawer_menu"
+            android:exported="false" />
+        <activity
+            android:name=".activity_base"
+            android:exported="false" />
+        <activity
             android:name=".activity_admin_upload"
             android:exported="false" />
         <activity
             android:name=".activity_movie_uploader"
             android:exported="false" />
         <activity
-            android:name=".CategoriesAdapter"
+            android:name=".CategoryAdapter"
             android:exported="false"
             tools:ignore="Instantiatable" />
         <activity
@@ -40,7 +53,7 @@
             </intent-filter>
         </activity> <!-- ❌ Removed LAUNCHER from LoginActivity -->
         <activity
-            android:name=".HomeActivity"
+            android:name=".MovieUploader"
             android:exported="true" /> <!-- ❌ Removed LAUNCHER from MainActivity -->
         <activity
             android:name=".MainActivity"

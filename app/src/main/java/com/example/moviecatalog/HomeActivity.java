@@ -1,24 +1,24 @@
 package com.example.moviecatalog;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -27,17 +27,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
     private RecyclerView categoriesRecyclerView;
     private EditText searchBar;
-    private Map<String, List<Movie>> categoryMap = new HashMap<>();
+    private final Map<String, List<Movie>> categoryMap = new HashMap<>();
     private CategoryAdapter categoryAdapter;
+
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // Toolbar setup
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Drawer setup
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
+
+        // Check if your strings.xml contains these:
+        // <string name="navigation_drawer_open">Open Navigation</string>
+        // <string name="navigation_drawer_close">Close Navigation</string>
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+        );
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // RecyclerView & SearchBar setup
         categoriesRecyclerView = findViewById(R.id.categories_recycler_view);
         searchBar = findViewById(R.id.search_bar);
 
@@ -47,7 +73,6 @@ public class HomeActivity extends AppCompatActivity {
 
         fetchMovies();
 
-        // Search functionality
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -66,15 +91,18 @@ public class HomeActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             Movie movie = doc.toObject(Movie.class);
                             String category = movie.getCategory();
-
+                            if (category == null || category.isEmpty()) {
+                                category = "Uncategorized";
+                            }
                             if (!categoryMap.containsKey(category)) {
                                 categoryMap.put(category, new ArrayList<>());
                             }
                             categoryMap.get(category).add(movie);
                         }
-                        categoryAdapter.notifyDataSetChanged();
+                        categoryAdapter.updateCategories(categoryMap);
                     } else {
                         Log.e("HomeActivity", "Error getting documents: ", task.getException());
+                        Toast.makeText(this, "Failed to load movies", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -90,75 +118,51 @@ public class HomeActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             Movie movie = doc.toObject(Movie.class);
                             String category = movie.getCategory();
-
-                            if (!filteredMap.containsKey(category)) {
-                                filteredMap.put(category, new ArrayList<>());
+                            if (category == null || category.isEmpty()) {
+                                category = "Uncategorized";
                             }
-                            filteredMap.get(category).add(movie);
+                            filteredMap.computeIfAbsent(category, k -> new ArrayList<>()).add(movie);
                         }
-
                         categoryMap.clear();
                         categoryMap.putAll(filteredMap);
-                        categoryAdapter.notifyDataSetChanged();
+                        categoryAdapter.updateCategories(categoryMap);
                     } else {
                         Log.e("Search", "Error fetching search results", task.getException());
+                        Toast.makeText(this, "Search failed", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    // Nested Adapter for Horizontal Movies inside Categories
-    public static class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
-        private final Context context;
-        private final List<Movie> movieList;
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        drawerLayout.closeDrawer(GravityCompat.START);
 
-        public MovieAdapter(Context context, List<Movie> movieList) {
-            this.context = context;
-            this.movieList = movieList;
+        int id = item.getItemId();
+
+        if (id == R.id.nav_home) {
+            // Already in HomeActivity, no need to relaunch
+            return true;
+        } else if (id == R.id.nav_account) {
+            startActivity(new Intent(this, AccountActivity.class));
+            return true;
+        } else if (id == R.id.nav_wishlist) {
+            startActivity(new Intent(this, WishlistActivity.class));
+            return true;
+        } else if (id == R.id.nav_logout) {
+            Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            return true;
         }
 
-        @NonNull
-        @Override
-        public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(context).inflate(R.layout.item_movie, parent, false);
-            return new MovieViewHolder(view);
-        }
+        return false;
+    }
 
-        @Override
-        public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-            Movie movie = movieList.get(position);
-            holder.movieTitle.setText(movie.getTitle());
-            holder.movieCategory.setText(movie.getCategory());
-            holder.movieImage.setImageResource(R.drawable.inception); // Make sure placeholder exists
-
-
-            holder.itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(context, MovieDetailsActivity.class);
-                intent.putExtra("title", movie.getTitle());
-                intent.putExtra("director", movie.getDirector());
-                intent.putExtra("category", movie.getCategory());
-                intent.putExtra("releaseDate", movie.getReleaseDate());
-                intent.putExtra("ratings", movie.getRatings());
-                intent.putExtra("castAndCrew", movie.getCastAndCrew());
-                intent.putExtra("reviews", movie.getReviews());
-                context.startActivity(intent);
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return movieList.size();
-        }
-
-        public static class MovieViewHolder extends RecyclerView.ViewHolder {
-            TextView movieTitle, movieCategory;
-            ImageView movieImage;
-
-            public MovieViewHolder(@NonNull View itemView) {
-                super(itemView);
-                movieTitle = itemView.findViewById(R.id.movie_title);
-                movieCategory = itemView.findViewById(R.id.movie_category);
-                movieImage = itemView.findViewById(R.id.movie_image);
-            }
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 }

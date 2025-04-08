@@ -1,5 +1,8 @@
 package com.example.moviecatalog;
 
+/**
+ * Model class representing a Movie object for Firestore.
+ */
 public class Movie {
     private String title;
     private String director;
@@ -8,12 +11,11 @@ public class Movie {
     private String ratings;
     private String castAndCrew;
     private String reviews;
-    private String imagePath; // ✅ NEW FIELD
+    private String imagePath; // Firebase Storage or Drive image URL
 
-    // Default constructor required for Firestore
+    // Required public no-arg constructor for Firestore
     public Movie() {}
 
-    // Constructor with imagePath included
     public Movie(String title, String director, String category, String releaseDate,
                  String ratings, String castAndCrew, String reviews, String imagePath) {
         this.title = title;
@@ -27,22 +29,68 @@ public class Movie {
     }
 
     // Getters
-    public String getTitle() { return title; }
-    public String getDirector() { return director; }
-    public String getCategory() { return category; }
-    public String getReleaseDate() { return releaseDate; }
-    public String getRatings() { return ratings; }
-    public String getCastAndCrew() { return castAndCrew; }
-    public String getReviews() { return reviews; }
-    public String getImagePath() { return imagePath; } // ✅ GETTER
+    public String getTitle() {
+        return title != null ? title : "";
+    }
 
-    // Setters (optional but useful for Firebase and editing)
-    public void setTitle(String title) { this.title = title; }
-    public void setDirector(String director) { this.director = director; }
-    public void setCategory(String category) { this.category = category; }
-    public void setReleaseDate(String releaseDate) { this.releaseDate = releaseDate; }
-    public void setRatings(String ratings) { this.ratings = ratings; }
-    public void setCastAndCrew(String castAndCrew) { this.castAndCrew = castAndCrew; }
-    public void setReviews(String reviews) { this.reviews = reviews; }
-    public void setImagePath(String imagePath) { this.imagePath = imagePath; } // ✅ SETTER
+    public String getDirector() {
+        return director != null ? director : "";
+    }
+
+    public String getCategory() {
+        return category != null ? category : "";
+    }
+
+    public String getReleaseDate() {
+        return releaseDate != null ? releaseDate : "";
+    }
+
+    public String getRatings() {
+        return ratings != null ? ratings : "";
+    }
+
+    public String getCastAndCrew() {
+        return castAndCrew != null ? castAndCrew : "";
+    }
+
+    public String getReviews() {
+        return reviews != null ? reviews : "";
+    }
+
+    public String getImagePath() {
+        return imagePath != null ? imagePath : "";
+    }
+
+    // Setters
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDirector(String director) {
+        this.director = director;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setRatings(String ratings) {
+        this.ratings = ratings;
+    }
+
+    public void setCastAndCrew(String castAndCrew) {
+        this.castAndCrew = castAndCrew;
+    }
+
+    public void setReviews(String reviews) {
+        this.reviews = reviews;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 }
